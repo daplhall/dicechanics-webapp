@@ -1,0 +1,6 @@
+@PythonSerivce_HostAddress = http://localhost:5032
+
+GET {{PythonSerivce_HostAddress}}/api/Python?program=Hello world
+Accept: application/json
+
+###
