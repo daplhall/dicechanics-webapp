@@ -1,0 +1,10 @@
+﻿{
+  "profiles": {
+    "MicroserviceCaller": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "PYTHONSERIVCE": "http://localhost:5032"
+      }
+    }
+  }
+}

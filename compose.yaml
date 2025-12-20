@@ -1,0 +1,28 @@
+# Please refer https://aka.ms/HTTPSinContainer on how to setup an https developer certificate for your ASP.NET Core service.
+
+services:
+  pythonserivce:
+    image: pythonserivce
+    container_name: pythonserivce
+    build:
+      context: .
+      dockerfile: PythonSerivce/Dockerfile
+    networks:
+      backend:
+    ports:
+      - 8080:8080
+
+  caller:
+    image: testcaller
+    depends_on:
+      - pythonserivce
+    build:
+      context: .
+      dockerfile: MicroserviceCaller/Dockerfile
+    environment:
+      #- PYTHONSERIVCE=http://172.18.0.2:8080
+      - PYTHONSERIVCE=http://pythonserivce:8080
+    networks:
+      backend:
+networks:
+  backend:

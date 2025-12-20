@@ -1,3 +1,19 @@
+#
+##Docker run:
+```
+sudo systemctl start docker
+```
+## finding ip address
+```
+docker isnpect <id>
+```
+http://172.18.0.2:8080/api/Python?program=hello
+## The problem
+When the program wants to connect we need to ensure that the C# exposed port is mapped to an external port in compose, by defautl c# chooses
+8080 os we need to map a port eg 5032 to an out port.
+
+
+#
 I want to create a webapp for Dicechancis akin to troll and anydice.
 The language is just gonna be a subset of python. 
 
