@@ -16,15 +16,10 @@ public class PythonController : ControllerBase
     [HttpGet]
     public PythonProgram Get([FromQuery] string program)
     {
-
-        /*
-        PythonEngine.Initialize();
         using (Py.GIL())
         {
             PythonEngine.Exec(program);
         }
-        */
-        Console.WriteLine("Hello world");
         return new PythonProgram() { Program = program };
     }
 }

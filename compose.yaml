@@ -7,6 +7,8 @@ services:
     build:
       context: .
       dockerfile: PythonSerivce/Dockerfile
+    environment:
+      - PYTHONNET_PYDLL=/usr/lib/x86_64-linux-gnu/libpython3.12.so
     networks:
       backend:
     ports:
@@ -20,7 +22,6 @@ services:
       context: .
       dockerfile: MicroserviceCaller/Dockerfile
     environment:
-      #- PYTHONSERIVCE=http://172.18.0.2:8080
       - PYTHONSERIVCE=http://pythonserivce:8080
     networks:
       backend:

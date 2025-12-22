@@ -14,13 +14,20 @@ class Program
     static public void Main(string[] args)
     {
         string? host = Environment.GetEnvironmentVariable("PYTHONSERIVCE");
-        string program = "print('Hello from python')";
+        string program = "print('Hello from python',flush=True)";
         while (true)
         {
             string url = host + $"/api/Python?program={program}";
-            string return_ = GetAsync(url)
-                 .GetAwaiter().GetResult();
-            Console.WriteLine(return_);
+            try
+            {
+                string return_ = GetAsync(url)
+                     .GetAwaiter().GetResult();
+                Console.WriteLine(return_);
+            }
+            catch
+            {
+                Console.WriteLine("No Result");
+            }
             Thread.Sleep(1000);
         }
     }

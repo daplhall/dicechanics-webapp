@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Python.Runtime;
 [assembly: ApiController]
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,4 +15,6 @@ app.UseAuthorization();
 
 app.MapControllers(); // Important adds them to an end point
 
+PythonEngine.Initialize();
+PythonEngine.BeginAllowThreads();
 app.Run();
