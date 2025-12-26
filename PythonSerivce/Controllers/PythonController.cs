@@ -15,11 +15,9 @@ public class PythonController : ControllerBase
     [HttpPost]
     public PythonProgram Get([FromBody] PythonProgram program)
     {
-        /*
         using (Py.GIL()) {
             PythonEngine.Exec(program.Program);
         }
-        */
         Console.WriteLine(program.Program);
         return program;
     }
