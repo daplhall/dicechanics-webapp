@@ -11,15 +11,16 @@ namespace PythonSerivce.Controllers;
 [Route("api/[controller]")]
 public class PythonController : ControllerBase
 {
-    public PythonController() { }
 
-    [HttpGet]
-    public PythonProgram Get([FromQuery] string program)
+    [HttpPost]
+    public PythonProgram Get([FromBody] PythonProgram program)
     {
-        using (Py.GIL())
-        {
-            PythonEngine.Exec(program);
+        /*
+        using (Py.GIL()) {
+            PythonEngine.Exec(program.Program);
         }
-        return new PythonProgram() { Program = program };
+        */
+        Console.WriteLine(program.Program);
+        return program;
     }
 }

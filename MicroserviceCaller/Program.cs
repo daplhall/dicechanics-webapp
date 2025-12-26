@@ -15,17 +15,13 @@ class Program
     {
         string? host = Environment.GetEnvironmentVariable("PYTHONSERIVCE");
         string program = "print('Hello from python',flush=True)";
-        while (true)
-        {
+        while (true) {
             string url = host + $"/api/Python?program={program}";
-            try
-            {
+            try {
                 string return_ = GetAsync(url)
                      .GetAwaiter().GetResult();
                 Console.WriteLine(return_);
-            }
-            catch
-            {
+            } catch {
                 Console.WriteLine("No Result");
             }
             Thread.Sleep(1000);

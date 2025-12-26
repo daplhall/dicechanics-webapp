@@ -57,3 +57,7 @@ Part 4: Adding custom syntax to python input
 
 Part 5: Make dummy WebAPP
 1. TODO
+##
+Current notes
+1. The client doens't preserve new lines, it should
+2. Because The APIs are on different addresses, when trying to post we get an error due to CORS

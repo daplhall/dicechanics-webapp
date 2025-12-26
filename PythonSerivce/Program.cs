@@ -4,13 +4,19 @@ using Python.Runtime;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddCors(options => {
+    options.AddPolicy("CorsPolicy",
+        policyBuilder => {
+            policyBuilder.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:4200");
+        });
+});
 builder.Services.AddOpenApi();
 builder.Services.AddControllers(); // This adds then you still need to map them
 
 var app = builder.Build();
 
+app.UseCors("CorsPolicy");
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
 
 app.MapControllers(); // Important adds them to an end point

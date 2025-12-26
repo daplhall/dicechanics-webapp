@@ -7,7 +7,6 @@
     <WarningsAsErrors>0219;CS0168;nullable</WarningsAsErrors>
     <AllowMissingPrunePackageData>true</AllowMissingPrunePackageData>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.0" />
     <PackageReference Include="pythonnet" Version="3.0.5" />
