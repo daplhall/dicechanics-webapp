@@ -4,8 +4,8 @@ services:
   client:
     image: dicechanics-client
     build:
-      context: .
-      dockerfile: Client/Dockerfile
+      context: ./Client
+      dockerfile: Dockerfile
     ports:
       - 4200:4200
     develop:
@@ -18,8 +18,8 @@ services:
     image: pythonservice
     container_name: pythonservice
     build:
-      context: .
-      dockerfile: PythonSerivce/Dockerfile
+      context: ./PythonSerivce
+      dockerfile: Dockerfile
     environment:
       - PYTHONNET_PYDLL=/usr/lib/x86_64-linux-gnu/libpython3.12.so
     networks:
