@@ -1,4 +1,3 @@
 <Solution>
-  <Project Path="MicroserviceCaller/MicroserviceCaller.csproj" />
   <Project Path="PythonSerivce/PythonSerivce.csproj" />
 </Solution>

@@ -12,6 +12,11 @@ http://172.18.0.2:8080/api/Python?program=hello
 When the program wants to connect we need to ensure that the C# exposed port is mapped to an external port in compose, by defautl c# chooses
 8080 os we need to map a port eg 5032 to an out port.
 
+# Angular
+```
+ng serve --configuration development 
+```
+for development config
 
 #
 I want to create a webapp for Dicechancis akin to troll and anydice.
@@ -61,3 +66,6 @@ Part 5: Make dummy WebAPP
 Current notes
 1. The client doens't preserve new lines, it should
 2. Because The APIs are on different addresses, when trying to post we get an error due to CORS
+3. The client should have a config for which api to call for pyhton.
+4. the client need to respond on errors
+5. the service should report back errors
