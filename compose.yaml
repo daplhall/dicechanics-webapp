@@ -17,8 +17,9 @@ services:
     networks:
       frontend:
 
-  pythonserivce:
+  pythonservice:
     container_name: pythonservice
+
     build:
       context: ./PythonSerivce
       dockerfile: Dockerfile

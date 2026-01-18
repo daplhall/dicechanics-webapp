@@ -7,7 +7,7 @@ RUN dotnet restore && dotnet publish -c Release -o out
 FROM mcr.microsoft.com/dotnet/aspnet:10.0
 ARG python_version="3.13"
 ENV PYTHONVERSION=$python_version
-arg venv=.venv
+ARG venv=.venv
 ENV VENV=$venv
 
 RUN apt-get update -y && apt-get install curl -y
@@ -16,9 +16,9 @@ RUN sh /uv-installer.sh && rm /uv-installer.sh
 ENV PATH="/root/.local/bin/:$PATH"
 
 WORKDIR /App
-COPY --from=build /App/out /App/StartWithPythonNet.sh .
-RUN chmod +x ./StartWithPythonNet.sh && uv venv $venv --python $python_version
+COPY --from=build /App/out /App/entrypoint.sh .
+RUN chmod +x ./entrypoint.sh && uv venv $venv --python $python_version
 
-ENTRYPOINT ["sh", "StartWithPythonNet.sh"]
+ENTRYPOINT ["sh", "entrypoint.sh"]
 CMD ["PythonSerivce.dll"]
  
