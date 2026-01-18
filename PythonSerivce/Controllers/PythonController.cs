@@ -1,7 +1,4 @@
-using System.Collections;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Python.Runtime;
 using PythonSerivce.Models;
 using PythonSerivce.Service;
 
@@ -13,14 +10,14 @@ namespace PythonSerivce.Controllers;
 public class PythonController : ControllerBase
 {
 
-    [HttpPost]
-    public ActionResult<PythonApiReturnValue> Post([FromBody] PythonProgram program)
-    {
-        PythonReturnValue pval = PythonConsole.Execute(program.Program);
-        if (!pval.ErrorOccoured()) {
-            return new PythonApiReturnValue { Results = pval.Results };
-        } else {
-            return BadRequest(pval.ErrorMessage);
+        [HttpPost]
+        public ActionResult Post([FromBody] PythonProgram program)
+        {
+                IPythonReturnValue pval = PyConsole.Execute(program.Program);
+                if (pval.Type == PyReturnType.result) {
+                        return Ok(pval.Msg);
+                } else {
+                        return BadRequest(pval.Msg);
+                }
         }
-    }
 }

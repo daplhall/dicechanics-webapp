@@ -1,11 +1,25 @@
 namespace PythonSerivce.Models;
 
-public class PythonReturnValue
+public enum PyReturnType
 {
-    public string Results { get; set; } = "";
-    public string ErrorMessage { get; set; } = "";
-    public bool ErrorOccoured()
-    {
-        return !string.IsNullOrEmpty(ErrorMessage);
-    }
+        result,
+        error
+}
+public interface IPythonReturnValue
+{
+        public string Msg { get; set; }
+        public PyReturnType Type { get; set; }
+}
+
+public class PythonReturnResult(string Message) : IPythonReturnValue
+{
+        public string Msg { get; set; } = Message;
+        public PyReturnType Type { get; set; } = PyReturnType.result;
+}
+
+
+public class PythonReturnError(string Message) : IPythonReturnValue
+{
+        public string Msg { get; set; } = Message;
+        public PyReturnType Type { get; set; } = PyReturnType.error;
 }

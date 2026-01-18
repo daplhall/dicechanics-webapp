@@ -1,18 +1,19 @@
-import { Injectable, inject, signal } from '@angular/core';
-import { environment } from '../environments/environment';
-import { HttpClient } from '@angular/common/http';
-import { PythonError } from './python-error';
+import {HttpClient} from '@angular/common/http';
+import {inject, Injectable, signal} from '@angular/core';
+
+import {environment} from '../environments/environment';
+
+import {PythonError} from './python-error';
+
 @Injectable({
   providedIn: 'root',
 })
 export class PythonService {
   private http = inject(HttpClient);
-  errMsg = signal<PythonError>(
-    {
-      status: 0,
-      error: "",
-    }
-  );
+  errMsg = signal<PythonError>({
+    status: 0,
+    error: '',
+  });
 
   setErrorMsg(msg: PythonError) {
     this.errMsg.set(msg);
@@ -23,18 +24,13 @@ export class PythonService {
   }
 
   Execute(program: string): void {
-    var retval = "";
+    var retval = '';
     try {
-
-      this.http.post(`${environment.pythonUrl}`, {
-        program: program
-      }).subscribe({
-        next: (response) => {
-          this.setErrorMsg({
-            status: 0,
-            error: "",
-          })
-        },
+      this.http.post(`${environment.pythonUrl}`, {program: program}).subscribe({
+        next: (response) => {this.setErrorMsg({
+          status: 0,
+          error: '',
+        })},
         error: (err) => {
           this.setErrorMsg({
             status: err.status,
@@ -46,5 +42,4 @@ export class PythonService {
       console.log(error)
     }
   }
-
 }

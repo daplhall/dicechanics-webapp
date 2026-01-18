@@ -1,4 +1,4 @@
 export interface PythonError {
-    status: number;
-    error: string;
+  status: number;
+  error: string;
 }
