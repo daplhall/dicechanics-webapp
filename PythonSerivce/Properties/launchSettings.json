@@ -8,7 +8,6 @@
       "applicationUrl": "http://localhost:5032",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "PYTHONNET_PYDLL": "/usr/lib/libpython3.13.so"
       }
     },
     "https": {
@@ -18,7 +17,7 @@
       "applicationUrl": "https://localhost:7298;http://localhost:5032",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "PYTHONNET_PYDLL": "/usr/lib/libpython3.13.so"
+        "PYTHONNET_PYDLL": "/usr/lib/libpython3.14.so"
       }
     }
   }

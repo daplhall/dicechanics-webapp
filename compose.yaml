@@ -2,28 +2,32 @@
 
 services:
   client:
-    image: dicechanics-client
+    container_name: dicechancis-client
     build:
       context: ./Client
       dockerfile: Dockerfile
+    image: dicechanics-client
     ports:
-      - 4200:4200
+      - 4200:80
     develop:
       watch:
         - action: sync
           path: .
           target: /app
+    networks:
+      frontend:
 
   pythonserivce:
-    image: pythonservice
     container_name: pythonservice
     build:
       context: ./PythonSerivce
       dockerfile: Dockerfile
+    image: pythonservice
     environment:
-      - PYTHONNET_PYDLL=/usr/lib/x86_64-linux-gnu/libpython3.12.so
+      - PYTHONNET_PYDLL=/usr/lib/x86_64-linux-gnu/libpython3.13.so
     networks:
       backend:
+      frontend:
     ports:
       - 8080:8080
 
@@ -40,3 +44,4 @@ services:
 #      backend:
 networks:
   backend:
+  frontend:
