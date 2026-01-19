@@ -17,6 +17,7 @@
       "applicationUrl": "https://localhost:7298;http://localhost:5032",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
+        "PYTHONNET_PYDLL": "/home/danielph/.local/share/uv/python/cpython-3.13.11-linux-x86_64-gnu/lib/libpython3.13.so.1.0"
       }
     }
   }

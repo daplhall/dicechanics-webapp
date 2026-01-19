@@ -6,7 +6,7 @@
 # Needs the enviormental Variables VENV and PYTHONVERISON
 
 . ./.venv/bin/activate
-export PYTHONVERISON=3.13
+export PYTHONVERSION=3.13
 export VENV=.venv
 pythonpath=$(dirname $(readlink -f $VENV/bin/python$PYTHONVERSION))/../lib/libpython$PYTHONVERSION.so
 export PYTHONNET_PYDLL=$(realpath $pythonpath)

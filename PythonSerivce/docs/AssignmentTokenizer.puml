@@ -1,0 +1,7 @@
+@startuml AssignmentTokenizer
+hide empty description
+top to bottom direction
+state Variable 
+state Assigner
+state Statement
+@enduml
