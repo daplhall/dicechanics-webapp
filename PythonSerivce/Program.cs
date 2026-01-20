@@ -25,7 +25,7 @@ app.MapControllers(); // Important adds them to an end point
 
 PythonEngine.Initialize();
 PythonEngine.BeginAllowThreads();
-StatementTokenizerCargo cargo = new("2+2*4/a");
-StateContext context = new(new NewTokenState(cargo));
-StateMachineLoop.Run(context);
+
+List<Instruction> a = StatementTokenizer.Parse("2+2*3/a");
+
 app.Run();

@@ -8,66 +8,46 @@ namespace PythonSerivce.Service.Interpreter;
  * States pass the cargo Back and forth
  * We then create an inheritated Class of Context called TokenizerContext
  * Which allows us to fetch the info
+ * For making things private
+ * https://stackoverflow.com/questions/13270414/inconsistent-accessibility-base-class-is-less-accessible-than-class
 */
 
-interface IStatementTokenizer
+public static class StatementTokenizer
 {
-
+        public static List<Instruction> Parse(string statement)
+        {
+                TokenizerStateData cargo = new(statement);
+                StateContext context = new(new NewTokenState(cargo));
+                StateMachineLoop.Run(context);
+                return cargo.Instructions;
+        }
 }
 
-public class Instruction(string type, string value)
-{
-        public string Type = type;
-        public string Value = value;
-
-}
 
 
-public class StringPointer(string text)
-{
-        private readonly string Statement = text;
-        private int Pointer = 0;
-
-        public static StringPointer operator ++(StringPointer operand)
-        {
-                ++operand.Pointer;
-                return operand;
-        }
-
-        public static StringPointer operator --(StringPointer operand)
-        {
-                --operand.Pointer;
-                return operand;
-        }
-
-        public char GetCurrent()
-        {
-
-                return (Pointer < Statement.Length) ? Statement[Pointer] : '\0';
-        }
-
-}
-
-public class StatementTokenizerCargo(string statement)
+/* This could just be the instruction you kno*/
+file class TokenizerStateData(string statement)
 {
         public StringPointer Statement { get; set; } = new StringPointer(statement);
         public List<Instruction> Instructions { get; set; } = [];
-        public string buffer = "";
+        //public string buffer = "";
+        public Instruction Token = new(InstructionType.Undefined, "");
 }
 
-public abstract class TokenizerBaseState(StatementTokenizerCargo cargo) : BaseState
+file abstract class TokenizerBaseState(TokenizerStateData cargo) : BaseState
 {
-        public StatementTokenizerCargo Cargo { get; protected set; } = cargo;
+        public TokenizerStateData Cargo { get; protected set; } = cargo;
 }
 
-public class NewTokenState : TokenizerBaseState
+file class NewTokenState : TokenizerBaseState
 {
-        public NewTokenState(StatementTokenizerCargo cargo) : base(cargo)
+        public NewTokenState(TokenizerStateData cargo) : base(cargo)
         {
                 Type = StateType.Transtistional;
         }
         public override void Update()
         {
+                Cargo.Token = new(InstructionType.Undefined, "");
                 char c = Cargo.Statement.GetCurrent();
                 if (char.IsLetterOrDigit(c)) {
                         this.context_.TranstistionTo(new ParameterState(Cargo));
@@ -85,9 +65,9 @@ public class NewTokenState : TokenizerBaseState
         public override void Exit() { }
 }
 
-public class ParameterState : TokenizerBaseState
+file class ParameterState : TokenizerBaseState
 {
-        public ParameterState(StatementTokenizerCargo cargo) : base(cargo)
+        public ParameterState(TokenizerStateData cargo) : base(cargo)
 
         {
                 Type = StateType.Transtistional;
@@ -96,19 +76,20 @@ public class ParameterState : TokenizerBaseState
         {
                 char c = Cargo.Statement.GetCurrent();
                 while (char.IsLetterOrDigit(c)) {
-                        Cargo.buffer += c;
+                        Cargo.Token.Value += c;
                         Cargo.Statement++;
                         c = Cargo.Statement.GetCurrent();
                 }
+                Cargo.Token.Type = InstructionType.LiteralNumeric;
                 context_.TranstistionTo(new CompleteTokenState(Cargo));
         }
         public override void Enter() { }
         public override void Exit() { }
 }
 
-public class OperatorState : TokenizerBaseState
+file class OperatorState : TokenizerBaseState
 {
-        public OperatorState(StatementTokenizerCargo cargo) : base(cargo)
+        public OperatorState(TokenizerStateData cargo) : base(cargo)
         {
                 Type = StateType.Transtistional;
         }
@@ -116,27 +97,27 @@ public class OperatorState : TokenizerBaseState
         {
                 char c = Cargo.Statement.GetCurrent();
                 while (Operators.IsOperator(c.ToString())) {
-                        Cargo.buffer += c;
+                        Cargo.Token.Value += c;
                         Cargo.Statement++;
                         c = Cargo.Statement.GetCurrent();
                 }
+                Cargo.Token.Type = InstructionType.Operator;
                 context_.TranstistionTo(new CompleteTokenState(Cargo));
         }
         public override void Enter() { }
         public override void Exit() { }
 }
 
-public class CompleteTokenState : TokenizerBaseState
+file class CompleteTokenState : TokenizerBaseState
 {
-        public CompleteTokenState(StatementTokenizerCargo cargo) : base(cargo)
+        public CompleteTokenState(TokenizerStateData cargo) : base(cargo)
         {
 
                 Type = StateType.Transtistional;
         }
         public override void Update()
         {
-                Cargo.Instructions.Add(new Instruction("Param", Cargo.buffer));
-                Cargo.buffer = "";
+                Cargo.Instructions.Add(Cargo.Token);
                 if (Cargo.Statement.GetCurrent() == '\0') {
                         context_.TranstistionTo(new ExitState(Cargo));
                 } else {
@@ -146,9 +127,9 @@ public class CompleteTokenState : TokenizerBaseState
         public override void Enter() { }
         public override void Exit() { }
 }
-public class ExitState : TokenizerBaseState
+file class ExitState : TokenizerBaseState
 {
-        public ExitState(StatementTokenizerCargo cargo) : base(cargo)
+        public ExitState(TokenizerStateData cargo) : base(cargo)
         {
 
                 Type = StateType.Exit;
@@ -159,9 +140,9 @@ public class ExitState : TokenizerBaseState
         public override void Enter() { }
         public override void Exit() { }
 }
-public class ErrorState : TokenizerBaseState
+file class ErrorState : TokenizerBaseState
 {
-        public ErrorState(StatementTokenizerCargo cargo) : base(cargo)
+        public ErrorState(TokenizerStateData cargo) : base(cargo)
         {
 
                 Type = StateType.Exit;
