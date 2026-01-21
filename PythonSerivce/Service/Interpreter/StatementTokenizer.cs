@@ -1,5 +1,3 @@
-using PythonSerivce.Service;
-using PythonSerivce.Service.Interpreter;
 namespace PythonSerivce.Service.Interpreter;
 
 /*I can likely write the parser better in C++, so might need tot look into using it*/
@@ -24,8 +22,6 @@ public static class StatementTokenizer
 }
 
 
-
-/* This could just be the instruction you kno*/
 file class TokenizerStateData(string statement)
 {
         public StringPointer Statement { get; set; } = new StringPointer(statement);
@@ -45,12 +41,37 @@ file class NewTokenState : TokenizerBaseState
         {
                 Type = StateType.Transtistional;
         }
+
         public override void Update()
         {
                 Cargo.Token = new(InstructionType.Undefined, "");
+                context_.TranstistionTo(new TypeOfTokenState(Cargo));
+        }
+        public override void Enter() { }
+        public override void Exit() { }
+}
+
+file class TypeOfTokenState : TokenizerBaseState
+{
+        public TypeOfTokenState(TokenizerStateData cargo) : base(cargo)
+        {
+                Type = StateType.Transtistional;
+        }
+        public override void Update()
+        {
                 char c = Cargo.Statement.GetCurrent();
-                if (char.IsLetterOrDigit(c)) {
-                        this.context_.TranstistionTo(new ParameterState(Cargo));
+                while (char.IsWhiteSpace(c)) {
+                        Cargo.Statement++;
+                        c = Cargo.Statement.GetCurrent();
+                }
+                if (c == '"') {
+                        this.context_.TranstistionTo(new StringState(Cargo));
+                        return;
+                } else if (c == '`') {
+                        this.context_.TranstistionTo(new VariableState(Cargo));
+                        return;
+                } else if (char.IsDigit(c)) {
+                        this.context_.TranstistionTo(new NumericalState(Cargo));
                         return;
                 } else if (Operators.IsOperator(c.ToString())) {
                         this.context_.TranstistionTo(new OperatorState(Cargo));
@@ -65,9 +86,40 @@ file class NewTokenState : TokenizerBaseState
         public override void Exit() { }
 }
 
-file class ParameterState : TokenizerBaseState
+file class StringState : TokenizerBaseState
 {
-        public ParameterState(TokenizerStateData cargo) : base(cargo)
+        public StringState(TokenizerStateData cargo) : base(cargo)
+        {
+                Type = StateType.Transtistional;
+        }
+
+        public override void Update()
+        {
+                Cargo.Statement++;
+                char c = Cargo.Statement.GetCurrent();
+                while (c != '"') {
+                        Cargo.Token.Value += c;
+                        Cargo.Statement++;
+                        c = Cargo.Statement.GetCurrent();
+                        if (c == '\0') {
+                                context_.TranstistionTo(new ErrorState(Cargo));
+                                return;
+                        }
+                }
+                Cargo.Statement++;
+                Cargo.Token.Type = InstructionType.LiteralSting;
+                context_.TranstistionTo(new CompleteTokenState(Cargo));
+        }
+        public override void Enter()
+        {
+
+        }
+        public override void Exit() { }
+}
+
+file class NumericalState : TokenizerBaseState
+{
+        public NumericalState(TokenizerStateData cargo) : base(cargo)
 
         {
                 Type = StateType.Transtistional;
@@ -75,12 +127,39 @@ file class ParameterState : TokenizerBaseState
         public override void Update()
         {
                 char c = Cargo.Statement.GetCurrent();
-                while (char.IsLetterOrDigit(c)) {
+                while (char.IsDigit(c)) {
                         Cargo.Token.Value += c;
                         Cargo.Statement++;
                         c = Cargo.Statement.GetCurrent();
                 }
                 Cargo.Token.Type = InstructionType.LiteralNumeric;
+                context_.TranstistionTo(new CompleteTokenState(Cargo));
+        }
+        public override void Enter() { }
+        public override void Exit() { }
+}
+file class VariableState : TokenizerBaseState
+{
+        public VariableState(TokenizerStateData cargo) : base(cargo)
+
+        {
+                Type = StateType.Transtistional;
+        }
+        public override void Update()
+        {
+                Cargo.Statement++;
+                char c = Cargo.Statement.GetCurrent();
+                while (c != '`') {
+                        Cargo.Token.Value += c;
+                        Cargo.Statement++;
+                        c = Cargo.Statement.GetCurrent();
+                        if (c == '\0') {
+                                context_.TranstistionTo(new ErrorState(Cargo));
+                                return;
+                        }
+                }
+                Cargo.Statement++;
+                Cargo.Token.Type = InstructionType.Variable;
                 context_.TranstistionTo(new CompleteTokenState(Cargo));
         }
         public override void Enter() { }
@@ -96,7 +175,7 @@ file class OperatorState : TokenizerBaseState
         public override void Update()
         {
                 char c = Cargo.Statement.GetCurrent();
-                while (Operators.IsOperator(c.ToString())) {
+                while (Operators.IsOperator(Cargo.Token.Value + c)) {
                         Cargo.Token.Value += c;
                         Cargo.Statement++;
                         c = Cargo.Statement.GetCurrent();

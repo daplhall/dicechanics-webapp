@@ -8,7 +8,7 @@ internal interface IOperators
 
 internal static class Operators
 {
-        private readonly static string[] operations = ["+", "-", "*", "/"];
+        private readonly static string[] operations = ["+", "-", "*", "/", "d"];
         public static bool IsOperator(string charater)
         {
                 return operations.Contains(charater);

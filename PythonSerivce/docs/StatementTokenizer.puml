@@ -2,22 +2,30 @@
 hide empty description
 top to bottom direction
 state NewToken
-State Parameter: consumes
+State Numerical: consumes
+state String : consumes
+state Variable: consumes
 state Operator: consumes
 state CompleteToken
 state Error
-state TypeOfToken <<choice>>
+state TypeOfToken : consumes whitespace
 state ToExit <<choice>>
 
 [*] --> NewToken
 NewToken --> TypeOfToken
-TypeOfToken --> Parameter : IsAlphaDigit
+TypeOfToken --> Numerical : IsDigit
 TypeOfToken --> Operator : IsOperator
 TypeOfToken --> Error : else
-Parameter --> Parameter : IsAlphaDigit
-Parameter --> CompleteToken : else
+TypeOfToken --> String : is double qoute
+TypeOfToken --> Variable : is backtick
+Numerical --> Numerical : IsAlphaDigit
+Numerical --> CompleteToken : else
 Operator --> Operator : IsOperator
 Operator --> CompleteToken : else
+String --> String : not double
+String --> CompleteToken : else
+Variable --> Variable : not backtick
+Variable  --> CompleteToken : else
 CompleteToken --> ToExit
 
 

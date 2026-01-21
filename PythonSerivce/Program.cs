@@ -26,6 +26,8 @@ app.MapControllers(); // Important adds them to an end point
 PythonEngine.Initialize();
 PythonEngine.BeginAllowThreads();
 
-List<Instruction> a = StatementTokenizer.Parse("2+2*3/a");
-
+List<Instruction> a = StatementTokenizer.Parse("2d`myDice` + `a`d6");
+foreach (var i in a) {
+        Console.WriteLine(i);
+}
 app.Run();
