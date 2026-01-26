@@ -2,10 +2,15 @@ using Python.Runtime;
 using PythonSerivce.Models;
 namespace PythonSerivce.Service;
 
-class PyConsole
+public interface IPyConsole
+{
+        public IPythonReturnValue Execute(string Program);
+}
+
+public class PyConsole : IPyConsole
 {
 
-        static public IPythonReturnValue Execute(string program)
+        public IPythonReturnValue Execute(string program)
         {
                 IPythonReturnValue res;
                 // TODO This place is ribe for exception throwing

@@ -1,17 +1,18 @@
 using PythonSerivce.Service.Interpreter;
-public class Instruction(InstructionType type, string value)
+public class Instruction(InstructionType type, string symbol)
 {
         public InstructionType Type = type;
-        public string Value = value;
+        public string Symbol = symbol;
 
         public override string ToString()
         {
-                return $"[{Type}] {Value}";
+                return $"[{Type}] {Symbol}";
         }
 }
 public enum InstructionType
 {
-        LiteralNumeric,
+        LiteralInteger,
+        LiteralDouble,
         LiteralSting,
         Operator,
         Variable,

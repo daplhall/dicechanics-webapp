@@ -1,3 +1,6 @@
+using System.Diagnostics.Eventing.Reader;
+using Microsoft.AspNetCore.Mvc;
+using PythonSerivce.Service.Interpreter;
 namespace PythonSerivce.Service.Interpreter;
 
 /*I can likely write the parser better in C++, so might need tot look into using it*/
@@ -17,10 +20,85 @@ public static class StatementTokenizer
                 TokenizerStateData cargo = new(statement);
                 StateContext context = new(new NewTokenState(cargo));
                 StateMachineLoop.Run(context);
-                return cargo.Instructions;
+                return ShuntingYard.ReversePolish(cargo.Instructions);
         }
 }
 
+
+file static class ShuntingYard
+{
+        public static List<Instruction> ReversePolish(List<Instruction> instructions)
+        {
+                Stack<Instruction> polish = new();
+                Stack<Instruction> yard = new();
+                foreach (Instruction inst in instructions) {
+                        switch (inst.Type) {
+                        case InstructionType.Operator:
+                                HandleOperator(inst, ref yard, ref polish);
+                                break;
+                        case InstructionType.ParenthesesOpen:
+                                yard.Push(inst);
+                                break;
+                        case InstructionType.ParenthesesClosed:
+                                FlushParentasis(ref yard, ref polish);
+                                break;
+                        default:
+                                polish.Push(inst);
+                                break;
+                        }
+                }
+                while (yard.Count != 0) {
+                        polish.Push(yard.Pop()); // might be replace with ToArray in a Add Range
+                }
+
+                List<Instruction> result = [];
+                result.AddRange(polish.Reverse());
+                result.AddRange(yard.Reverse());
+                return result;
+        }
+
+        private static void HandleOperator(Instruction inst, ref Stack<Instruction> yard, ref Stack<Instruction> polish)
+        {
+                if (yard.Count != 0 && yard.Peek().Type == InstructionType.ParenthesesOpen) {
+                        yard.Push(inst);
+                } else if (yard.Count == 0 || Operators.GetWeight(inst.Symbol) >= Operators.GetWeight(yard.Peek().Symbol)) {
+                        yard.Push(inst);
+                } else {
+                        while (yard.Count != 0) {
+                                polish.Push(yard.Pop());
+                        }
+                }
+        }
+
+        private static void FlushParentasis(ref Stack<Instruction> yard, ref Stack<Instruction> polish)
+        {
+
+                while (yard.Peek().Type != InstructionType.ParenthesesOpen) {
+                        polish.Push(yard.Pop());
+                }
+                yard.Pop();
+                return;
+        }
+}
+
+file static class Operators
+{
+        private readonly static Dictionary<string, int> operations = new() {
+                { "+", 1},
+                { "-", 1},
+                { "*", 2},
+                { "/", 2},
+                { "d", 3}
+        };
+        public static bool IsOperator(string charater)
+        {
+                return operations.ContainsKey(charater);
+        }
+        public static int GetWeight(string key)
+        {
+                return operations[key];
+        }
+}
 
 file class TokenizerStateData(string statement)
 {
@@ -33,6 +111,19 @@ file class TokenizerStateData(string statement)
 file abstract class TokenizerBaseState(TokenizerStateData cargo) : BaseState
 {
         public TokenizerStateData Cargo { get; protected set; } = cargo;
+
+        protected char IncrementStatement()
+        {
+                Cargo.Statement++;
+                return Cargo.Statement.GetCurrent();
+
+        }
+        protected char WriteBufferAndIncrement()
+        {
+                Cargo.Token.Symbol += Cargo.Statement.GetCurrent();
+                return IncrementStatement();
+
+        }
 }
 
 file class NewTokenState : TokenizerBaseState
@@ -61,8 +152,7 @@ file class TypeOfTokenState : TokenizerBaseState
         {
                 char c = Cargo.Statement.GetCurrent();
                 while (char.IsWhiteSpace(c)) {
-                        Cargo.Statement++;
-                        c = Cargo.Statement.GetCurrent();
+                        c = IncrementStatement();
                 }
                 if (c == '"') {
                         this.context_.TranstistionTo(new StringState(Cargo));
@@ -75,6 +165,9 @@ file class TypeOfTokenState : TokenizerBaseState
                         return;
                 } else if (Operators.IsOperator(c.ToString())) {
                         this.context_.TranstistionTo(new OperatorState(Cargo));
+                        return;
+                } else if (c == '(' || c == ')') {
+                        this.context_.TranstistionTo(new ParentasisState(Cargo));
                         return;
                 } else {
                         this.context_.TranstistionTo(new ErrorState(Cargo));
@@ -98,9 +191,7 @@ file class StringState : TokenizerBaseState
                 Cargo.Statement++;
                 char c = Cargo.Statement.GetCurrent();
                 while (c != '"') {
-                        Cargo.Token.Value += c;
-                        Cargo.Statement++;
-                        c = Cargo.Statement.GetCurrent();
+                        c = WriteBufferAndIncrement();
                         if (c == '\0') {
                                 context_.TranstistionTo(new ErrorState(Cargo));
                                 return;
@@ -117,6 +208,32 @@ file class StringState : TokenizerBaseState
         public override void Exit() { }
 }
 
+file class ParentasisState : TokenizerBaseState
+{
+        public ParentasisState(TokenizerStateData cargo) : base(cargo)
+        {
+                Type = StateType.Transtistional;
+        }
+
+        public override void Update()
+        {
+                char c = Cargo.Statement.GetCurrent(); ;
+                switch (c) {
+                case '(':
+                        Cargo.Token.Type = InstructionType.ParenthesesOpen;
+                        break;
+                case ')':
+                        Cargo.Token.Type = InstructionType.ParenthesesClosed;
+                        break;
+                }
+                IncrementStatement();
+                context_.TranstistionTo(new CompleteTokenState(Cargo));
+
+        }
+        public override void Enter() { }
+        public override void Exit() { }
+}
+
 file class NumericalState : TokenizerBaseState
 {
         public NumericalState(TokenizerStateData cargo) : base(cargo)
@@ -127,12 +244,18 @@ file class NumericalState : TokenizerBaseState
         public override void Update()
         {
                 char c = Cargo.Statement.GetCurrent();
-                while (char.IsDigit(c)) {
-                        Cargo.Token.Value += c;
-                        Cargo.Statement++;
-                        c = Cargo.Statement.GetCurrent();
+                while (c != '.' && char.IsDigit(c)) {
+                        c = WriteBufferAndIncrement();
                 }
-                Cargo.Token.Type = InstructionType.LiteralNumeric;
+                Cargo.Token.Type = InstructionType.LiteralInteger;
+                if (c == '.') {
+                        c = WriteBufferAndIncrement();
+                        while (char.IsDigit(c)) {
+                                c = WriteBufferAndIncrement();
+                        }
+                        Cargo.Token.Type = InstructionType.LiteralDouble;
+                }
+
                 context_.TranstistionTo(new CompleteTokenState(Cargo));
         }
         public override void Enter() { }
@@ -150,9 +273,7 @@ file class VariableState : TokenizerBaseState
                 Cargo.Statement++;
                 char c = Cargo.Statement.GetCurrent();
                 while (c != '`') {
-                        Cargo.Token.Value += c;
-                        Cargo.Statement++;
-                        c = Cargo.Statement.GetCurrent();
+                        c = WriteBufferAndIncrement();
                         if (c == '\0') {
                                 context_.TranstistionTo(new ErrorState(Cargo));
                                 return;
@@ -175,10 +296,9 @@ file class OperatorState : TokenizerBaseState
         public override void Update()
         {
                 char c = Cargo.Statement.GetCurrent();
-                while (Operators.IsOperator(Cargo.Token.Value + c)) {
-                        Cargo.Token.Value += c;
-                        Cargo.Statement++;
-                        c = Cargo.Statement.GetCurrent();
+                while (Operators.IsOperator(Cargo.Token.Symbol + c)) {
+                        c = WriteBufferAndIncrement();
+
                 }
                 Cargo.Token.Type = InstructionType.Operator;
                 context_.TranstistionTo(new CompleteTokenState(Cargo));

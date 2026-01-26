@@ -5,12 +5,10 @@ internal interface IOperators
         public static abstract bool IsOperator(string charater);
 }
 
-
-internal static class Operators
+internal interface IOperator
 {
-        private readonly static string[] operations = ["+", "-", "*", "/", "d"];
-        public static bool IsOperator(string charater)
-        {
-                return operations.Contains(charater);
-        }
+        public int Weight { get; }
+        public string Symbol { get; }
 }
+
+

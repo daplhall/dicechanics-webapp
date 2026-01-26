@@ -1,0 +1,46 @@
+@startuml StSCompiler
+hide empty description
+top to bottom direction
+
+interface Translator{
+    + CompiledProgram Parse(string program)
+}
+interface Tokenizer {
+    Instructions Parse(string Program)
+}
+interface AbstractSyntaxTree
+{
+    + AbstractSyntaxTree(Instructions)
+}
+interface Compiler
+{
+    + CompiledProgram Parse(AbstractSyntaxTree)
+}
+class DicechanicsConfig{
+    Meta data about the Translator
+    contains:
+    1. Operators
+    2. String delimiter
+    3. Variable Delimiter
+    4. Float Delimiter
+    5. Block Delimiter
+    + IsOperator
+    + IsStringDelimiter
+    + IsDecimalPoint
+    + IsBlockDelimiter
+    + IsVariableDelimiter
+}
+interface CompiledProgram{
+    + ToString()
+    + SaveFile(string path)
+}
+Translator ..> Tokenizer
+Translator ..> AbstractSyntaxTree
+Translator ..> Compiler
+Compiler ..> CompiledProgram
+TokenizerImpl .up.|> Tokenizer
+TokenizerImpl --> DicechanicsConfig
+TokenizerImpl --> OperatorWeights
+TokenizerImpl --> ShuntingYards
+TokenizerImpl --> StateMachine
+@enduml

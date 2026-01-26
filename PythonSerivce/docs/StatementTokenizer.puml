@@ -6,6 +6,7 @@ State Numerical: consumes
 state String : consumes
 state Variable: consumes
 state Operator: consumes
+state Parentases: Consumes
 state CompleteToken
 state Error
 state TypeOfToken : consumes whitespace
@@ -18,6 +19,7 @@ TypeOfToken --> Operator : IsOperator
 TypeOfToken --> Error : else
 TypeOfToken --> String : is double qoute
 TypeOfToken --> Variable : is backtick
+TypeOfToken --> Parentases
 Numerical --> Numerical : IsAlphaDigit
 Numerical --> CompleteToken : else
 Operator --> Operator : IsOperator
@@ -26,6 +28,7 @@ String --> String : not double
 String --> CompleteToken : else
 Variable --> Variable : not backtick
 Variable  --> CompleteToken : else
+Parentases  --> CompleteToken
 CompleteToken --> ToExit
 
 
