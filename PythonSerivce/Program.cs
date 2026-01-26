@@ -12,6 +12,7 @@ builder.Services.AddCors(options => {
                     policyBuilder.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:4200");
             });
 });
+builder.Services.AddSingleton<IPyConsole, PyConsole>();
 builder.Services.AddOpenApi();
 builder.Services.AddControllers(); // This adds then you still need to map them
 
@@ -26,8 +27,4 @@ app.MapControllers(); // Important adds them to an end point
 PythonEngine.Initialize();
 PythonEngine.BeginAllowThreads();
 
-List<Instruction> a = StatementTokenizer.Parse("2d`myDice` + `a`d6");
-foreach (var i in a) {
-        Console.WriteLine(i);
-}
 app.Run();

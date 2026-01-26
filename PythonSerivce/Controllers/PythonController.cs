@@ -11,9 +11,9 @@ public class PythonController : ControllerBase
 {
 
         [HttpPost]
-        public ActionResult Post([FromBody] PythonProgram program)
+        public IActionResult Post([FromServices] IPyConsole console, [FromBody] PythonProgram program)
         {
-                IPythonReturnValue pval = PyConsole.Execute(program.Program);
+                IPythonReturnValue pval = console.Execute(program.Program);
                 if (pval.Type == PyReturnType.result) {
                         return Ok(pval.Msg);
                 } else {

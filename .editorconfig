@@ -3,5 +3,6 @@ csharp_new_line_before_open_brace = local_functions,methods,properties,types
 csharp_new_line_before_else = false
 csharp_new_line_before_catch = false
 csharp_new_line_before_finally = false
+csharp_indent_switch_labels = false
 indent_size = 8
 tab_width = 8
