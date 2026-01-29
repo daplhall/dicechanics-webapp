@@ -1,4 +1,4 @@
-namespace PythonSerivce.Service.Interpreter;
+namespace DieInterpreter;
 
 internal interface IOperators
 {

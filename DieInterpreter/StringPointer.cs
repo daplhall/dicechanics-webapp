@@ -1,4 +1,4 @@
-namespace PythonSerivce.Service;
+namespace DieInterpreter;
 
 public class StringPointer(string text)
 {

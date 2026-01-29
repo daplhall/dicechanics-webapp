@@ -1,4 +1,5 @@
-using PythonSerivce.Service.Interpreter;
+namespace DieInterpreter;
+
 public class Instruction(InstructionType type, string symbol)
 {
         public InstructionType Type = type;

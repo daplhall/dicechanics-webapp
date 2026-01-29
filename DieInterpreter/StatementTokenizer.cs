@@ -1,8 +1,4 @@
-using System.Diagnostics.Eventing.Reader;
-using Microsoft.AspNetCore.Mvc;
-using PythonSerivce.Service.Interpreter;
-namespace PythonSerivce.Service.Interpreter;
-
+namespace DieInterpreter;
 /*I can likely write the parser better in C++, so might need tot look into using it*/
 
 /*
@@ -25,7 +21,7 @@ public static class StatementTokenizer
 }
 
 
-file static class ShuntingYard
+internal static class ShuntingYard
 {
         public static List<Instruction> ReversePolish(List<Instruction> instructions)
         {
@@ -81,7 +77,7 @@ file static class ShuntingYard
         }
 }
 
-file static class Operators
+internal static class Operators
 {
         private readonly static Dictionary<string, int> operations = new() {
                 { "+", 1},

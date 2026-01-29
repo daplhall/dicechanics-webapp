@@ -1,3 +1,5 @@
 <Solution>
+  <Project Path="DieInterpreter/DieInterpreter.csproj" />
+  <Project Path="DieInterpreterTests/DieInterpreterTests.csproj" />
   <Project Path="PythonSerivce/PythonSerivce.csproj" />
 </Solution>

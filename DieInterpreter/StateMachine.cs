@@ -1,9 +1,7 @@
 
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using Microsoft.AspNetCore.SignalR;
 
-namespace PythonSerivce.Service;
+namespace DieInterpreter;
 
 
 public interface IStateContext

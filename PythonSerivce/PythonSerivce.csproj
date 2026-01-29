@@ -16,5 +16,9 @@
     <Folder Include="Controllers/" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="../DieInterpreter/DieInterpreter.csproj" />
+  </ItemGroup>
+
 
 </Project>
