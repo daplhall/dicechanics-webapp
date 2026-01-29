@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Python.Runtime;
 using PythonSerivce.Service;
-using PythonSerivce.Service.Interpreter;
 [assembly: ApiController]
 
 var builder = WebApplication.CreateBuilder(args);

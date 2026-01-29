@@ -1,14 +1,22 @@
 namespace DieInterpreter;
 
-internal interface IOperators
+
+public interface IOperators
 {
-        public static abstract bool IsOperator(string charater);
+
+        public bool IsOperator(string character);
+        public int GetWeight(string key);
 }
 
-internal interface IOperator
+internal class Operators(Dictionary<string, int> operators) : IOperators
 {
-        public int Weight { get; }
-        public string Symbol { get; }
+        private readonly Dictionary<string, int> operations = operators;
+        public bool IsOperator(string character)
+        {
+                return operations.ContainsKey(character);
+        }
+        public int GetWeight(string key)
+        {
+                return operations[key];
+        }
 }
-
-
